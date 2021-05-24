@@ -2,7 +2,7 @@ import React from "react";
 
 const Persons = ({ persons, search }) => {
   const filteredPersons = persons.filter((person) =>
-    person.name.toLowerCase().includes(search)
+    person.name.toLowerCase().includes(search.toLowerCase())
   );
   return (
     <div>
