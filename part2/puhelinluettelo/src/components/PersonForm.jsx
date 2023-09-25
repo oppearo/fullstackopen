@@ -1,5 +1,3 @@
-import React from "react";
-
 const PersonForm = (props) => {
   return (
     <form onSubmit={props.addPerson}>

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import axios from "axios";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -51,9 +51,10 @@ const App = () => {
 
   return (
     <div>
-      <h1>Phonebook</h1>
+      <h2>Phonebook</h2>
       <Filter search={search} handleSearch={handleSearch} />
-      <h2>Add a new</h2>
+
+      <h3>Add a new</h3>
       <PersonForm
         addPerson={addPerson}
         newName={newName}
