@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import personService from "./components/PersonsService";
+import personService from "./services/PersonsService";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -24,18 +24,29 @@ const App = () => {
 
     personService
     .create(personObject)
-    .then(response => {
-      setPersons(persons.concat(response.data));
+    .then(returnedObject => {
+      setPersons(persons.concat(returnedObject));
       setNewName("");
       setNewNumber("");
     })
   };
 
+  const deletePerson = (id) => {
+    if (window.confirm('Delete ' + event.target.name + ' ?')) {
+      personService
+        .remove(id)
+        .then(returnedPerson => {
+          persons.map(person => person.id !== id ? person : returnedPerson)
+      })
+      setPersons(persons.filter(p => p.id !== id));
+    }
+  };
+
   useEffect(() => {
     console.log("effect");
-    personService.getAll().then((response) => {
+    personService.getAll().then(initialPersons => {
       console.log("promise fulfilled");
-      setPersons(response.data);
+      setPersons(initialPersons);
     });
   }, []);
 
@@ -70,7 +81,11 @@ const App = () => {
         handleNewNumber={handleNewNumber}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} search={search} />
+      <Persons
+        persons={persons}
+        search={search}
+        deletePerson={deletePerson}
+      />
     </div>
   );
 };
