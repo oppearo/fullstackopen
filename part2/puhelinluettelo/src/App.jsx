@@ -3,12 +3,15 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personService from "./services/PersonsService";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
+  const [message, setMessage] = useState(null);
+  const [messageIsError, setMessageIsError] = useState(true);
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -30,6 +33,11 @@ const App = () => {
 
     personService.create(personObject).then((returnedObject) => {
       setPersons(persons.concat(returnedObject));
+      setMessageIsError(false);
+      setMessage(`Added ${newName}`);
+      setTimeout(() => {
+        setMessage(null);
+      }, 8000);
       setNewName("");
       setNewNumber("");
     });
@@ -40,6 +48,11 @@ const App = () => {
       personService.remove(id).then((returnedPerson) => {
         persons.map((person) => (person.id !== id ? person : returnedPerson));
       });
+      setMessageIsError(false);
+      setMessage(`Deleted ${event.target.name}`);
+      setTimeout(() => {
+        setMessage(null);
+      }, 8000);
       setPersons(persons.filter((p) => p.id !== id));
     }
   };
@@ -64,6 +77,18 @@ const App = () => {
             person.id !== updatedPerson.id ? person : returnedPerson
           )
         );
+        setMessageIsError(false);
+        setMessage(`Updated ${returnedPerson.name}`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 8000);
+      })
+      .catch((error) => {
+        setMessageIsError(true);
+        setMessage(`${updatedPerson.name} was already removed from the server`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 8000);
       });
   };
 
@@ -85,6 +110,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} isError={messageIsError} />
       <Filter search={search} handleSearch={handleSearch} />
 
       <h3>Add a new</h3>
@@ -98,11 +124,7 @@ const App = () => {
         handleNewNumber={handleNewNumber}
       />
       <h2>Numbers</h2>
-      <Persons
-        persons={persons}
-        search={search}
-        deletePerson={deletePerson}
-      />
+      <Persons persons={persons} search={search} deletePerson={deletePerson} />
     </div>
   );
 };
