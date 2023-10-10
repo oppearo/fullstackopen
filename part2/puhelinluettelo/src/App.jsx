@@ -14,7 +14,13 @@ const App = () => {
     event.preventDefault();
     const listOfNames = persons.map((person) => person.name);
     if (listOfNames.includes(newName)) {
-      return window.alert(`${newName} is already added to phonebook`);
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, do you want to replace the old number with a new one?`
+        )
+      ) {
+        return updatePerson(newName);
+      }
     }
 
     const personObject = {
@@ -22,33 +28,44 @@ const App = () => {
       number: newNumber,
     };
 
-    personService
-    .create(personObject)
-    .then(returnedObject => {
+    personService.create(personObject).then((returnedObject) => {
       setPersons(persons.concat(returnedObject));
       setNewName("");
       setNewNumber("");
-    })
+    });
   };
 
   const deletePerson = (id) => {
-    if (window.confirm('Delete ' + event.target.name + ' ?')) {
-      personService
-        .remove(id)
-        .then(returnedPerson => {
-          persons.map(person => person.id !== id ? person : returnedPerson)
-      })
-      setPersons(persons.filter(p => p.id !== id));
+    if (window.confirm("Delete " + event.target.name + " ?")) {
+      personService.remove(id).then((returnedPerson) => {
+        persons.map((person) => (person.id !== id ? person : returnedPerson));
+      });
+      setPersons(persons.filter((p) => p.id !== id));
     }
   };
 
   useEffect(() => {
     console.log("effect");
-    personService.getAll().then(initialPersons => {
+    personService.getAll().then((initialPersons) => {
       console.log("promise fulfilled");
       setPersons(initialPersons);
     });
   }, []);
+
+  const updatePerson = (personName) => {
+    console.log("updating person " + personName);
+    const updatedPerson = persons.find((person) => person.name === personName);
+    const personObject = { ...updatedPerson, number: newNumber };
+    personService
+      .update(updatedPerson.id, personObject)
+      .then((returnedPerson) => {
+        setPersons(
+          persons.map((person) =>
+            person.id !== updatedPerson.id ? person : returnedPerson
+          )
+        );
+      });
+  };
 
   const handleNewName = (event) => {
     console.log("New name: ", event.target.value);
