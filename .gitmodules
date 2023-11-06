@@ -1,0 +1,4 @@
+[submodule "part3/puhelinluettelo-backend"]
+	path = part3/puhelinluettelo-backend
+	url = https://github.com/oppearo/puhelinluettelo-backend.git
+	branch = master
