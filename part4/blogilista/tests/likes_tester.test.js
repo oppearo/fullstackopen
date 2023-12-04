@@ -37,7 +37,7 @@ describe('total likes', () => {
 })
 
 describe('favourite blog', () => {
-  test('of an empty list returns an empty object', () => {
+  test('of an empty list returns a dummy object', () => {
     const result = listHelper.favoriteBlog([])
     expect(result).toEqual({ title: 'dummy', author: 'dummy', likes: 0 })
   })
@@ -61,4 +61,20 @@ describe('favourite blog', () => {
     const result = listHelper.favoriteBlog(dummyList)
     expect(result).toEqual(expectedResult)
   })
+})
+
+describe('most blogs', () => {
+  test('of an empty list returns an undefined object', () => {
+    const result = listHelper.mostBlogs([])
+    expect(result).toEqual()
+  })
+
+
+  test('of a bigger list is found correctly', () => {
+    const expectedResult = {
+      author: 'Robert C. Martin',
+      blogs: 3
+    }
+    const result = listHelper.mostBlogs(dummyList)
+    expect(result).toEqual(expectedResult)})
 })

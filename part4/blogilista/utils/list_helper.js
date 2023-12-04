@@ -1,3 +1,5 @@
+const lod = require('lodash')
+
 const dummy = (array) => {
   return 1
 }
@@ -21,8 +23,14 @@ const favoriteBlog = (array) => {
   return { title: value.title, author: value.author, likes: value.likes }
 }
 
+const mostBlogs = (array) => {
+  let authorCount = lod.map(lod.countBy(array, 'author'), (val, key) => ({ author: key, blogs: val }))
+  return lod.maxBy(authorCount, 'blogs')
+}
+
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs
 }
