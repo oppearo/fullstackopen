@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+content-type: application/json
+
+{
+  "title": "Frank's Energy Drink Review",
+  "author": "Seppo Seponseppo",
+  "url": "hidden",
+  "likes": 69
+}
