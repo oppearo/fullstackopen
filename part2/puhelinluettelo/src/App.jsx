@@ -31,16 +31,26 @@ const App = () => {
       number: newNumber,
     };
 
-    personService.create(personObject).then((returnedObject) => {
-      setPersons(persons.concat(returnedObject));
-      setMessageIsError(false);
-      setMessage(`Added ${newName}`);
-      setTimeout(() => {
-        setMessage(null);
-      }, 8000);
-      setNewName("");
-      setNewNumber("");
-    });
+    personService
+      .create(personObject)
+      .then((returnedObject) => {
+        setPersons(persons.concat(returnedObject));
+        setMessageIsError(false);
+        setMessage(`Added ${newName}`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 8000);
+        setNewName("");
+        setNewNumber("");
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+        setMessageIsError(true);
+        setMessage(`Error! ${error.response.data.error}`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 8000);
+      });
   };
 
   const deletePerson = (id) => {
@@ -85,7 +95,7 @@ const App = () => {
       })
       .catch((error) => {
         setMessageIsError(true);
-        setMessage(`${updatedPerson.name} was already removed from the server`);
+        setMessage(`Error! ${error.response.data.error}`);
         setTimeout(() => {
           setMessage(null);
         }, 8000);
