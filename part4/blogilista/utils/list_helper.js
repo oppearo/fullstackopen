@@ -28,9 +28,16 @@ const mostBlogs = (array) => {
   return lod.maxBy(authorCount, 'blogs')
 }
 
+const mostLikes = (array) => {
+  let likeCount = lod.map(lod.groupBy(array, 'likes'), (val, key) => ({ author: val[0].author, likes: Number(key) }))
+  let result = lod.map(lod.groupBy(likeCount, 'author'), (obj, key) => ({ author: key, likes: lod.sumBy(obj, 'likes') }))
+  return lod.maxBy(result, 'likes')
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
