@@ -47,6 +47,6 @@ const unitTestBlogList = [
     likes: 2,
     __v: 0
   }
-]
+];
 
-module.exports = unitTestBlogList
+module.exports = unitTestBlogList;
