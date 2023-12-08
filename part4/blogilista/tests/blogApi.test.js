@@ -55,6 +55,29 @@ describe('BlogsAPI tests', () => {
     expect(blogsAfterAdding.body).toHaveLength(initialBlogs.length + 1);
     expect(titles).toContain(newBlog.title);
   });
+
+  test('a blog with no initial likes set has zero likes', async () => {
+    await Blog.deleteMany({});
+
+    const newBlogWithoutLikes = {
+      title: '25 years on, my first win. PS. Buy the darts celebrating the win here',
+      author: 'Raymond van Barneveld',
+      url: 'www.pdc.tv',
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlogWithoutLikes)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const blogsAfterAdding = await api.get('/api/blogs');
+
+    const likes = blogsAfterAdding.body.map(blog => blog.likes);
+
+    expect(blogsAfterAdding.body).toHaveLength(1); // only the one that we just added
+    expect(likes).toContain(0);
+  });
 });
 
 
