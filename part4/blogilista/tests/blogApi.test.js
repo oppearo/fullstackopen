@@ -78,6 +78,32 @@ describe('BlogsAPI tests', () => {
     expect(blogsAfterAdding.body).toHaveLength(1); // only the one that we just added
     expect(likes).toContain(0);
   });
+
+  test('an added blog without a title is rejected with a 400 error code', async () => {
+    const newBlogWithoutTitle = {
+      author: 'Phil Taylor',
+      url: 'www.pdc.tv',
+      likes: 1
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlogWithoutTitle)
+      .expect(400);
+  });
+
+  test('an added blog without an url is rejected with a 400 error code', async () => {
+    const newBlogWithoutUrl = {
+      title: '25 years on, my first win. PS. Buy the darts celebrating the win here',
+      author: 'Raymond van Barneveld',
+      likes: 25
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlogWithoutUrl)
+      .expect(400);
+  });
 });
 
 
