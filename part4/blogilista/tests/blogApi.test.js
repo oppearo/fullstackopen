@@ -27,6 +27,13 @@ describe('BlogsAPI tests', () => {
     expect(response.body).toHaveLength(initialBlogs.length);
   });
 
+  test('identifier field of blogs is correctly named', async () => {
+    const response = await api
+      .get('/api/blogs');
+
+    expect(response.body[0].id).toBeDefined();
+  });
+
 });
 
 
