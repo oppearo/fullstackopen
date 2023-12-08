@@ -34,6 +34,27 @@ describe('BlogsAPI tests', () => {
     expect(response.body[0].id).toBeDefined();
   });
 
+  test('a blog is added to the database with the correct title', async () => {
+    const newBlog = {
+      title: '25 years on, my first win. PS. Buy the darts celebrating the win here',
+      author: 'Raymond van Barneveld',
+      url: 'www.pdc.tv',
+      likes: 25
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const blogsAfterAdding = await api.get('/api/blogs');
+
+    const titles = blogsAfterAdding.body.map(blog => blog.title);
+
+    expect(blogsAfterAdding.body).toHaveLength(initialBlogs.length + 1);
+    expect(titles).toContain(newBlog.title);
+  });
 });
 
 
