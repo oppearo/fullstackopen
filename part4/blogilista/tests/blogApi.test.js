@@ -7,13 +7,13 @@ const api = supertest(app);
 
 const Blog = require('../models/blog');
 
+beforeEach(async () => {
+  await Blog.deleteMany({});
+  await Blog.insertMany(helper.initialBlogs);
+});
+
 describe('BlogsAPI blogs test suite', () => {
   describe('getting existing blogs', () => {
-    beforeEach(async () => {
-      await Blog.deleteMany({});
-      await Blog.insertMany(helper.initialBlogs);
-    });
-
     test('blogs are returned as json', async () => {
       await api
         .get('/api/blogs')
@@ -34,11 +34,6 @@ describe('BlogsAPI blogs test suite', () => {
     });
 
   });
-  beforeEach(async () => {
-    await Blog.deleteMany({});
-    await Blog.insertMany(helper.initialBlogs);
-  });
-
   describe('a blog is added', () => {
     test('to the database successfully with the correct title', async () => {
       const newBlog = {
