@@ -1,18 +1,18 @@
 const mongoose = require('mongoose');
 const supertest = require('supertest');
+const helper = require('./testHelper');
 const app = require('../app');
 
 const api = supertest(app);
 
 const Blog = require('../models/Blog');
-const initialBlogs = require('./unitTestBlogList');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
-  await Blog.insertMany(initialBlogs);
+  await Blog.insertMany(helper.initialBlogs);
 });
 
-describe('BlogsAPI tests', () => {
+describe('BlogsAPI GET tests', () => {
 
   test('blogs are returned as json', async () => {
     await api
@@ -24,17 +24,18 @@ describe('BlogsAPI tests', () => {
   test('all blogs are returned', async () => {
     const response = await api.get('/api/blogs');
 
-    expect(response.body).toHaveLength(initialBlogs.length);
+    expect(response.body).toHaveLength(helper.initialBlogs.length);
   });
 
   test('identifier field of blogs is correctly named', async () => {
-    const response = await api
-      .get('/api/blogs');
+    const response = await api.get('/api/blogs');
 
     expect(response.body[0].id).toBeDefined();
   });
+});
 
-  test('a blog is added to the database with the correct title', async () => {
+describe('a blog is added', () => {
+  test('to the database successfully with the correct title', async () => {
     const newBlog = {
       title: '25 years on, my first win. PS. Buy the darts celebrating the win here',
       author: 'Raymond van Barneveld',
@@ -48,15 +49,15 @@ describe('BlogsAPI tests', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
-    const blogsAfterAdding = await api.get('/api/blogs');
+    const blogsAfterAdding = await helper.blogsInDb();
 
-    const titles = blogsAfterAdding.body.map(blog => blog.title);
+    const titles = blogsAfterAdding.map(blog => blog.title);
 
-    expect(blogsAfterAdding.body).toHaveLength(initialBlogs.length + 1);
+    expect(blogsAfterAdding).toHaveLength(helper.initialBlogs.length + 1);
     expect(titles).toContain(newBlog.title);
   });
 
-  test('a blog with no initial likes set has zero likes', async () => {
+  test('with no initial likes is successfully added and has zero likes', async () => {
     await Blog.deleteMany({});
 
     const newBlogWithoutLikes = {
@@ -71,15 +72,15 @@ describe('BlogsAPI tests', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
-    const blogsAfterAdding = await api.get('/api/blogs');
+    const blogsAfterAdding = await helper.blogsInDb();
 
-    const likes = blogsAfterAdding.body.map(blog => blog.likes);
+    const likes = blogsAfterAdding.map(blog => blog.likes);
 
-    expect(blogsAfterAdding.body).toHaveLength(1); // only the one that we just added
+    expect(blogsAfterAdding).toHaveLength(1); // only the one that we just added
     expect(likes).toContain(0);
   });
 
-  test('an added blog without a title is rejected with a 400 error code', async () => {
+  test('without a title and is rejected with a 400 error code', async () => {
     const newBlogWithoutTitle = {
       author: 'Phil Taylor',
       url: 'www.pdc.tv',
@@ -92,7 +93,7 @@ describe('BlogsAPI tests', () => {
       .expect(400);
   });
 
-  test('an added blog without an url is rejected with a 400 error code', async () => {
+  test('without an url and is rejected with a 400 error code', async () => {
     const newBlogWithoutUrl = {
       title: '25 years on, my first win. PS. Buy the darts celebrating the win here',
       author: 'Raymond van Barneveld',
@@ -106,6 +107,24 @@ describe('BlogsAPI tests', () => {
   });
 });
 
+describe('a blog is deleted', () => {
+  test('successfully, 204 is returned', async () => {
+    const blogsBeforeDelete = await helper.blogsInDb();
+    const blogToBeDeleted = blogsBeforeDelete[0];
+
+    await api
+      .delete(`/api/blogs/${blogToBeDeleted.id}`)
+      .expect(204);
+
+    const blogsAfterDelete = await helper.blogsInDb();
+
+    expect(blogsAfterDelete).toHaveLength(blogsBeforeDelete.length - 1);
+
+    const titles = blogsAfterDelete.map(b => b.title);
+
+    expect(titles).not.toContain(blogToBeDeleted.title);
+  });
+});
 
 afterAll(async () => {
   await mongoose.connection.close();

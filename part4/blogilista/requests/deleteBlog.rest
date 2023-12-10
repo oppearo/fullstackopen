@@ -1,0 +1,15 @@
+### Add blog
+# @name addBlog
+POST http://localhost:3003/api/blogs
+content-type: application/json
+
+{
+  "title": "Frank's Energy Drink Review (draft)",
+  "author": "Seppo Seponseppo",
+  "url": "hidden",
+  "likes": 1
+}
+### Remove the added blog
+DELETE http://localhost:3003/api/blogs/{{addBlog.response.body.id}}
+### List blogs so that added blog is not present
+GET http://localhost:3003/api/blogs
