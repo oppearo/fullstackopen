@@ -126,6 +126,47 @@ describe('a blog is deleted', () => {
   });
 });
 
+describe('a blog is updated', () => {
+  test('successfully, returns 200', async () => {
+    const initialBlogs = await helper.blogsInDb();
+    let blogToBeUpdated = initialBlogs[0];
+    const initialLikes = blogToBeUpdated.likes; // 7
+    const newLikes = initialLikes + 5; // 12
+
+    blogToBeUpdated.title = 'Edited Title';
+    blogToBeUpdated.author = 'The Editor';
+    blogToBeUpdated.likes = newLikes;
+
+    await api
+      .put(`/api/blogs/${blogToBeUpdated.id}`)
+      .send(blogToBeUpdated)
+      .expect(200);
+
+    const blogsAfterUpdate = await helper.blogsInDb();
+
+    expect(blogsAfterUpdate).toHaveLength(initialBlogs.length); // no new items
+    expect(blogsAfterUpdate[0].title).toContain('Edited Title');
+    expect(blogsAfterUpdate[0].author).toContain('The Editor');
+
+    const updatedLikes = blogsAfterUpdate.map(b => b.likes);
+    expect(updatedLikes[0]).toBe(newLikes);
+    expect(updatedLikes[0]).not.toBe(initialLikes);
+  });
+
+  test('unsuccessfully as title is missing, returns 400', async () => {
+    const initialBlogs = await helper.blogsInDb();
+    let blogToBeUpdated = initialBlogs[0];
+
+    blogToBeUpdated.title = '';
+
+    await api
+      .put(`/api/blogs/${blogToBeUpdated.id}`)
+      .send(blogToBeUpdated)
+      .expect(400);
+  });
+});
+
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
