@@ -1,24 +1,34 @@
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
+const User = require('../models/user');
 const logger = require('../utils/logger');
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({});
+  const blogs = await Blog
+    .find({})
+    .populate('user', { username: 1, name: 1 });
+
   response.json(blogs);
 });
 
 blogsRouter.post('/', async (request, response) => {
   const body = request.body;
 
+  const users = await User.find({});
+  const randomUser = users[0]; // true random ;)
+
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes
+    likes: body.likes,
+    user: randomUser._id
   });
 
   try {
     const savedBlog = await blog.save();
+    randomUser.blogs = randomUser.blogs.concat(savedBlog._id);
+    await randomUser.save();
     response.status(201).json(savedBlog);
   } catch (error) { // not an elegant solution, mongoose returns 500 if missing fields
     logger.error('error caught when POST');

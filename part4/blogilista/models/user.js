@@ -13,7 +13,11 @@ const userSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-  }
+  },
+  blogs: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Blog'
+  }]
 });
 
 userSchema.plugin(uniqueValidator);
@@ -28,6 +32,4 @@ userSchema.set('toJSON', {
   }
 });
 
-const User = mongoose.model('User', userSchema);
-
-module.exports = User;
+module.exports = mongoose.model('User', userSchema);
