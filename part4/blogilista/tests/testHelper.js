@@ -54,8 +54,8 @@ const initialBlogs = [
 
 const initialUsers = [
   {
-    username: 'seppohovi',
-    password: 'tiietääntiietään',
+    username: 'shovi',
+    password: 'seppo123',
     name: 'Seppo Hovi'
   },
   {
