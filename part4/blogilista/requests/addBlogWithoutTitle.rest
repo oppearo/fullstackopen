@@ -1,5 +1,31 @@
+### First, add user (if not added already)
+# @name addUser
+POST http://localhost:3003/api/users
+content-type: application/json
+
+{
+  "username": "shovi",
+  "password": "seppo123",
+  "name": "Seppo Hovi"
+}
+
+### Login required for user
+# @name login
+POST http://localhost:3003/api/login
+content-type: application/json
+
+{
+  "username": "{{addUser.request.body.username}}",
+  "password": "{{addUser.request.body.password}}"
+}
+
+### Get token
+@accessToken = {{login.response.body.token}}
+
+### Post new blog without title -> 400 error
 POST http://localhost:3003/api/blogs
 content-type: application/json
+Authorization: Bearer {{accessToken}}
 
 {
   "author": "Seppo Seponseppo",

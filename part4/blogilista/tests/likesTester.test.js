@@ -1,5 +1,5 @@
 const listHelper = require('../utils/listHelper');
-const dummyList = require('./unitTestBlogList');
+const testHelper = require('./testHelper');
 
 const listWithOneBlog = [
   {
@@ -31,7 +31,7 @@ describe('total likes', () => {
   });
 
   test('of a bigger list is calculated correctly', () => {
-    const result = listHelper.totalLikes(dummyList);
+    const result = listHelper.totalLikes(testHelper.initialBlogs);
     expect(result).toBe(36);
   });
 });
@@ -58,7 +58,7 @@ describe('favourite blog', () => {
       author: 'Edsger W. Dijkstra',
       likes: 12
     };
-    const result = listHelper.favoriteBlog(dummyList);
+    const result = listHelper.favoriteBlog(testHelper.initialBlogs);
     expect(result).toEqual(expectedResult);
   });
 });
@@ -74,7 +74,7 @@ describe('most blogs', () => {
       author: 'Robert C. Martin',
       blogs: 3
     };
-    const result = listHelper.mostBlogs(dummyList);
+    const result = listHelper.mostBlogs(testHelper.initialBlogs);
     expect(result).toEqual(expectedResult);});
 });
 
@@ -99,6 +99,6 @@ describe('most likes', () => {
       author: 'Edsger W. Dijkstra',
       likes: 17
     };
-    const result = listHelper.mostLikes(dummyList);
+    const result = listHelper.mostLikes(testHelper.initialBlogs);
     expect(result).toEqual(expectedResult);});
 });

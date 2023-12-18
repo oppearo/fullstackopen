@@ -1,4 +1,5 @@
 const blogsRouter = require('express').Router();
+const jwt = require('jsonwebtoken');
 const Blog = require('../models/blog');
 const User = require('../models/user');
 const logger = require('../utils/logger');
@@ -11,32 +12,45 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs);
 });
 
+blogsRouter.get('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id);
+
+  if (blog) {
+    response.json(blog);
+  } else {
+    response.status(404).end;
+  }
+});
+
 blogsRouter.post('/', async (request, response) => {
   const body = request.body;
+  const token = request.token;
 
-  const users = await User.find({});
-  const randomUser = users[0]; // true random ;)
+  if (!token) {
+    return response.status(401).json({ error: 'token missing' });
+  }
+
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' });
+  }
+
+  const user = await User.findById(decodedToken.id);
 
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes,
-    user: randomUser._id
+    user: user._id
   });
 
-  try {
-    const savedBlog = await blog.save();
-    randomUser.blogs = randomUser.blogs.concat(savedBlog._id);
-    await randomUser.save();
-    response.status(201).json(savedBlog);
-  } catch (error) { // not an elegant solution, mongoose returns 500 if missing fields
-    logger.error('error caught when POST');
-    if (error.name === 'ValidationError') {
-      logger.error('ValidationError, returning 400');
-      response.status(400).end();
-    }
-  }
+  const savedBlog = await blog.save();
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
+  response.status(201).json(savedBlog);
+
 });
 
 blogsRouter.delete('/:id', async (request, response) => {
@@ -48,20 +62,12 @@ blogsRouter.delete('/:id', async (request, response) => {
 blogsRouter.put('/:id', async (request, response) => {
   const { title, author, url, likes } = request.body;
 
-  try {
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      request.params.id,
-      { title, author, url, likes },
-      { new: true, runValidators: true, context: 'query' }
-    );
-    response.json(updatedBlog);
-  } catch (error) {
-    logger.error(`error caught when PUT, id: ${request.params.id}`);
-    if (error.name === 'ValidationError') {
-      logger.error('ValidationError, returning 400');
-      response.status(400).end();
-    }
-  }
+  const updatedBlog = await Blog.findByIdAndUpdate(
+    request.params.id,
+    { title, author, url, likes },
+    { new: true, runValidators: true, context: 'query' }
+  );
+  response.json(updatedBlog);
 });
 
 module.exports = blogsRouter;

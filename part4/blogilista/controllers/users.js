@@ -33,16 +33,8 @@ usersRouter.post('/', async (request, response) => {
     passwordHash
   });
 
-  try {
-    const savedUser = await user.save();
-    response.status(201).json(savedUser);
-  } catch (error) {
-    logger.error('error caught when POST');
-    if (error.name === 'ValidationError') {
-      logger.error('ValidationError, returning 400');
-      response.status(400).json({ error: 'no username given' });
-    }
-  }
+  const savedUser = await user.save();
+  response.status(201).json(savedUser);
 });
 
 module.exports = usersRouter;
