@@ -6,10 +6,25 @@ const app = require('../app');
 const api = supertest(app);
 
 const Blog = require('../models/blog');
+const User = require('../models/user');
+
+let userToken;
 
 beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
+  await User.deleteMany({});
+
+  const user = { username: 'admin', password: 'nimda123', name: 'asd mcasdface' };
+  await api
+    .post('/api/users')
+    .send(user);
+
+  const login = await api
+    .post('/api/login')
+    .send(user);
+
+  userToken = login.body.token;
 });
 
 describe('BlogsAPI blogs test suite', () => {
@@ -45,6 +60,7 @@ describe('BlogsAPI blogs test suite', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${userToken}`)
         .send(newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/);
@@ -68,6 +84,7 @@ describe('BlogsAPI blogs test suite', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${userToken}`)
         .send(newBlogWithoutLikes)
         .expect(201)
         .expect('Content-Type', /application\/json/);
@@ -89,6 +106,7 @@ describe('BlogsAPI blogs test suite', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${userToken}`)
         .send(newBlogWithoutTitle)
         .expect(400);
     });
@@ -102,18 +120,49 @@ describe('BlogsAPI blogs test suite', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${userToken}`)
         .send(newBlogWithoutUrl)
         .expect(400);
+    });
+
+    test('without a token and is rejected with a 401 error code', async () => {
+      const newBlog = {
+        title: '25 years on, my first win. PS. Buy the darts celebrating the win here',
+        author: 'Raymond van Barneveld',
+        url: 'www.pdc.tv',
+        likes: 25
+      };
+
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(401);
     });
   });
 
   describe('a blog is deleted', () => {
     test('successfully, 204 is returned', async () => {
-      const blogsBeforeDelete = await helper.blogsInDb();
-      const blogToBeDeleted = blogsBeforeDelete[0];
+      // add new blog to be deleted
+      const newBlog = {
+        title: '25 years on, my first win. PS. Buy the darts celebrating the win here',
+        author: 'Raymond van Barneveld',
+        url: 'www.pdc.tv',
+        likes: 25
+      };
 
       await api
-        .delete(`/api/blogs/${blogToBeDeleted.id}`)
+        .post('/api/blogs')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/);
+
+      const blogsBeforeDelete = await helper.blogsInDb();
+      const blogToDelete = blogsBeforeDelete.find(blog => blog.title === newBlog.title);
+
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .set('Authorization', `Bearer ${userToken}`)
         .expect(204);
 
       const blogsAfterDelete = await helper.blogsInDb();
@@ -122,7 +171,20 @@ describe('BlogsAPI blogs test suite', () => {
 
       const titles = blogsAfterDelete.map(b => b.title);
 
-      expect(titles).not.toContain(blogToBeDeleted.title);
+      expect(titles).not.toContain(blogToDelete.title);
+    });
+
+    test('without a token and is rejected with a 401 error code', async () => {
+      const blogsBeforeDelete = await helper.blogsInDb();
+      const blogToBeDeleted = blogsBeforeDelete[0];
+
+      await api
+        .delete(`/api/blogs/${blogToBeDeleted.id}`)
+        .expect(401);
+
+      const blogsAfterDelete = await helper.blogsInDb();
+
+      expect(blogsAfterDelete).toHaveLength(blogsBeforeDelete.length);
     });
   });
 
@@ -139,6 +201,7 @@ describe('BlogsAPI blogs test suite', () => {
 
       await api
         .put(`/api/blogs/${blogToBeUpdated.id}`)
+        .set('Authorization', `Bearer ${userToken}`)
         .send(blogToBeUpdated)
         .expect(200);
 
@@ -161,6 +224,7 @@ describe('BlogsAPI blogs test suite', () => {
 
       await api
         .put(`/api/blogs/${blogToBeUpdated.id}`)
+        .set('Authorization', `Bearer ${userToken}`)
         .send(blogToBeUpdated)
         .expect(400);
     });
