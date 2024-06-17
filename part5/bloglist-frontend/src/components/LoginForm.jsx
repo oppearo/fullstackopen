@@ -1,17 +1,21 @@
-import { useState, useEffect } from "react";
-
-const LoginForm = (props) => {
+const LoginForm = ({
+  handleSubmit,
+  handleUsernameChange,
+  handlePasswordChange,
+  username,
+  password,
+}) => {
   return (
     <div>
       <h2>Please log in</h2>
-      <form onSubmit={props.handleLogin}>
+      <form onSubmit={handleSubmit}>
         <div>
           username
           <input
             type="text"
-            value={props.username}
+            value={username}
             name="Username"
-            onChange={({ target }) => setUsername(target.value)}
+            onChange={handleUsernameChange}
           />
         </div>
         <div>
@@ -20,7 +24,7 @@ const LoginForm = (props) => {
             type="password"
             value={password}
             name="Password"
-            onChange={({ target }) => setPassword(target.value)}
+            onChange={handlePasswordChange}
           />
         </div>
         <button type="submit">login</button>
