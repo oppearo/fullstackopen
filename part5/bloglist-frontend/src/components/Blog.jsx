@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Blog = ({ blog, addLike }) => {
+const Blog = ({ blog, addLike, removeBlog, user }) => {
   const [visible, setVisible] = useState(false)
   const blogStyle = {
     paddingTop: 10,
@@ -16,26 +16,39 @@ const Blog = ({ blog, addLike }) => {
     setVisible(!visible)
   }
 
+  const checkCorrectUser = () => {
+    if (user.username === blog.user.username) {
+      return <button onClick={deleteBlog}>remove blog</button>
+    }
+
+    return <p></p>
+  }
+
   const likeBlog = (event) => {
     event.preventDefault()
     addLike(blog)
   }
 
+  const deleteBlog = (event) => {
+    event.preventDefault()
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      removeBlog(blog.id, blog.title)
+    }
+  }
+
   return (
     <div style={blogStyle}>
-      {blog.title} by {blog.author}
-      <div style={hideWhenVisible}>
-        {' '}
-        <button onClick={toggleVisibility}>view more info</button>
-      </div>
+      {blog.title} {blog.author}
+      <button onClick={toggleVisibility} style={hideWhenVisible}>view</button>
+      <button onClick={toggleVisibility} style={showWhenVisible}>hide</button>
       <div style={showWhenVisible}>
         {blog.url}
         <p>
           {' '}
           {blog.likes} <button onClick={likeBlog}>like this post</button>{' '}
         </p>
-        {blog.user.username}
-        <button onClick={toggleVisibility}>hide more info</button>
+        {blog.user.name}
+        {checkCorrectUser()}
       </div>
     </div>
   )

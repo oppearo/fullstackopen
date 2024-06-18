@@ -55,6 +55,7 @@ const App = () => {
       blogService
         .create(blogObject)
         .then((returnedBlog) => setBlogs(blogs.concat(returnedBlog)))
+        .then(setMessageIsError(false))
         .then(
           setMessage(
             `a new blog ${blogObject.title} by ${blogObject.author} was added`,
@@ -70,6 +71,7 @@ const App = () => {
       setMessage(`${e.response.data.error}`)
       setTimeout(() => {
         setMessage(null)
+        setMessageIsError(null)
       }, 8000)
     }
   }
@@ -79,7 +81,8 @@ const App = () => {
       blogObject.likes = blogObject.likes + 1
       console.log(`likes of ${blogObject.title} are now ${blogObject.likes}`)
       blogService
-        .put(blogObject)
+        .update(blogObject)
+        .then(setMessageIsError(false))
         .then(
           setMessage(
             `You liked ${blogObject.title}, it has now ${blogObject.likes} likes`,
@@ -95,6 +98,34 @@ const App = () => {
       setMessage(`${e.response.data.error}`)
       setTimeout(() => {
         setMessage(null)
+        setMessageIsError(null)
+      }, 8000)
+    }
+  }
+
+  const removeBlog = (id, title) => {
+    try {
+      console.log(`removing blog ${id}`)
+      blogService
+        .remove(id)
+        .then(setMessageIsError(false))
+        .then(
+          setMessage(
+            `${title} was removed`,
+          ),
+        )
+        .then(
+          setTimeout(() => {
+            setMessage(null)
+          }, 8000),
+        )
+        .then(setBlogs(blogs.filter((b) => b.id !== id)))
+    } catch (e) {
+      setMessageIsError(true)
+      setMessage(`${e.response.data.error}`)
+      setTimeout(() => {
+        setMessage(null)
+        setMessageIsError(null)
       }, 8000)
     }
   }
@@ -134,7 +165,7 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.sort((a, b) => b.likes - a.likes).map((blog) => (
-        <Blog key={blog.id} blog={blog} addLike={addLike} />
+        <Blog key={blog.id} blog={blog} addLike={addLike} removeBlog={removeBlog} user={user} />
       ))}
     </div>
   )

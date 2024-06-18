@@ -21,16 +21,26 @@ const create = async (newObject) => {
   return response.data
 }
 
-const put = async (blogObject) => {
+const update = async (blogObject) => {
   const config = {
     headers: { Authorization: token },
   }
 
-  const url = baseUrl + '/' + blogObject.id
-  console.log(`sending PUT to ${url}`)
+  console.log(`sending PUT to ${baseUrl}/${blogObject.id}`)
 
-  const response = await axios.put(url, blogObject, config)
+  const response = await axios.put(`${baseUrl}/${blogObject.id}`, blogObject, config)
   return response.data
 }
 
-export default { getAll, create, put, setToken }
+const remove = async (id) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  console.log(`sending DELETE to ${baseUrl}/${id}`)
+
+  const response = await axios.delete(`${baseUrl}/${id}`, config)
+  return response.data
+}
+
+export default { getAll, create, update, remove, setToken }
