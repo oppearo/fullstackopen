@@ -50,3 +50,32 @@ test('renders url, likes and user, when view has been pressed', async () => {
   expect(likesElement).not.toHaveStyle('display: none')
   expect(userElement).not.toHaveStyle('display: none')
 })
+
+test('checks that like button event handler is called twice when like button is pressed twice', async () => {
+  const blog = {
+    title: 'Title for unit test',
+    author: 'react-testing-library',
+    likes: 4,
+    url: 'http://example.com',
+    user: {
+      name: 'Test Name',
+      username: 'test'
+    }
+  }
+
+  const mockHandler = vi.fn()
+
+  render(<Blog blog={blog} addLike={mockHandler} />)
+
+  const user = userEvent.setup()
+  const viewButton = screen.getByText('view')
+  expect(viewButton).toHaveTextContent('view')
+
+  await user.click(viewButton)
+
+  const likeButton = screen.getByText('like this post')
+  await user.click(likeButton)
+  await user.click(likeButton)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
+})
