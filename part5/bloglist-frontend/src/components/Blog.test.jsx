@@ -31,6 +31,14 @@ test('renders url, likes and user, when view has been pressed', async () => {
   }
 
   render(<Blog blog={blog} />)
+  const urlElement = screen.getByText('http://example.com', { exact: false })
+  const likesElement = screen.getByText('4', { exact: false })
+  const userElement = screen.getByText('Test Name', { exact: false })
+
+  // should not be visible at this point
+  expect(urlElement).not.toBeVisible()
+  expect(likesElement).not.toBeVisible()
+  expect(userElement).not.toBeVisible()
 
   const user = userEvent.setup()
   const buttonBefore = screen.getByText('view')
@@ -41,14 +49,10 @@ test('renders url, likes and user, when view has been pressed', async () => {
   const buttonAfter = screen.getByText('hide')
   expect(buttonAfter).toHaveTextContent('hide')
 
-  const urlElement = screen.getByText('http://example.com', { exact: false })
-  const likesElement = screen.getByText('4', { exact: false })
-  const userElement = screen.getByText('Test Name', { exact: false })
-
-  // check elements to be visible
-  expect(urlElement).not.toHaveStyle('display: none')
-  expect(likesElement).not.toHaveStyle('display: none')
-  expect(userElement).not.toHaveStyle('display: none')
+  // check that elements are now visible
+  expect(urlElement).toBeVisible()
+  expect(likesElement).toBeVisible()
+  expect(userElement).toBeVisible()
 })
 
 test('checks that like button event handler is called twice when like button is pressed twice', async () => {
