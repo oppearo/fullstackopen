@@ -53,4 +53,23 @@ describe('Blog app', () => {
       await expect(page.getByText(`${blogUrl}`)).toBeVisible();
     })
   })
+
+  describe('When logged in and a blog has been added', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'TestUser', 'password123')
+      await addBlog(page, 'Test Title', 'Test Author', 'http://example.com')
+    })
+
+    test('a blog can be liked', async ({ page }) => {
+      const initialLikes = 0
+      await page.getByRole('button', { name: 'view' }).click();
+      await expect(page.getByText(`${initialLikes} like this post`)).toBeVisible()
+
+      await page.getByRole('button', { name: 'like this post' }).click()
+
+      const messageDiv = await page.locator('.message')
+      await expect(messageDiv).toContainText(`You liked Test Title, it has now ${initialLikes + 1} likes`)
+      await expect(page.getByText(`${initialLikes + 1} like this post`)).toBeVisible()
+    })
+  })
 })
