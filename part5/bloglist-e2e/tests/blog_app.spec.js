@@ -11,6 +11,14 @@ describe('Blog app', () => {
         name: 'Test User'
       }
     })
+    await request.post('/api/users', {
+      data: {
+        username: 'seconduser',
+        password: 'password12345',
+        name: 'Second User'
+      }
+    })
+
     await page.goto('/')
   })
 
@@ -49,8 +57,8 @@ describe('Blog app', () => {
       await expect(messageDiv).toContainText(`a new blog ${blogTitle} by ${blogAuthor} was added`)
 
       await expect(page.getByText(`${blogTitle} ${blogAuthor}`)).toBeVisible()
-      await page.getByRole('button', { name: 'view' }).click();
-      await expect(page.getByText(`${blogUrl}`)).toBeVisible();
+      await page.getByRole('button', { name: 'view' }).click()
+      await expect(page.getByText(`${blogUrl}`)).toBeVisible()
     })
   })
 
@@ -58,11 +66,11 @@ describe('Blog app', () => {
     beforeEach(async ({ page }) => {
       await loginWith(page, 'TestUser', 'password123')
       await addBlog(page, 'Test Title', 'Test Author', 'http://example.com')
+      await page.getByRole('button', { name: 'view' }).click()
     })
 
     test('a blog can be liked', async ({ page }) => {
       const initialLikes = 0
-      await page.getByRole('button', { name: 'view' }).click();
       await expect(page.getByText(`${initialLikes} like this post`)).toBeVisible()
 
       await page.getByRole('button', { name: 'like this post' }).click()
@@ -73,7 +81,6 @@ describe('Blog app', () => {
     })
 
     test('a blog can be deleted by the user that added the blog', async ({ page }) => {
-      await page.getByRole('button', { name: 'view' }).click();
       page.once('dialog', dialog => {
         console.log(`Dialog message: ${dialog.message()}`);
         dialog.accept()
@@ -83,6 +90,15 @@ describe('Blog app', () => {
       await expect(messageDiv).toContainText('Test Title was removed')
 
       await expect(page.getByText('Test Title Test Author')).not.toBeVisible()
+    })
+
+    test('a blog cannot be deleted by the user that has not created the blog', async ({ page }) => {
+      await page.getByRole('button', { name: 'logout' }).click()
+      await loginWith(page, 'seconduser', 'password12345')
+
+      await page.getByRole('button', { name: 'view' }).click()
+
+      await expect(page.getByRole('button', { name: 'remove blog' })).not.toBeVisible()
     })
   })
 })
