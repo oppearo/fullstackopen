@@ -13,6 +13,7 @@ const addBlog = async (page, blogTitle, blogAuthor, blogUrl) => {
     await page.getByPlaceholder('url goes here').click();
     await page.getByPlaceholder('url goes here').fill(blogUrl);
     await page.getByRole('button', { name: 'submit' }).click();
+    await page.getByText(`${blogTitle} ${blogAuthor}`).waitFor()
 }
 
 export { loginWith, addBlog }

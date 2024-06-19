@@ -100,5 +100,24 @@ describe('Blog app', () => {
 
       await expect(page.getByRole('button', { name: 'remove blog' })).not.toBeVisible()
     })
+
+    test.only('the blog with the most likes is shown first', async ({ page }) => {
+      await addBlog(page, 'Second Blog', 'Second Author', 'http://example.com')
+
+      const firstBlogDiv = await page.locator('.blog').and(page.getByText('Test Title Test Author'))
+      await expect(firstBlogDiv).toContainText('Test Title')
+
+      const secondBlogDiv = await page.locator('.blog').and(page.getByText('Second Blog Second Author'))
+      await expect(secondBlogDiv).toContainText('Second Blog')
+      await secondBlogDiv.getByRole('button', { name: 'view' }).click()
+      await secondBlogDiv.getByRole('button', { name: 'like this post' }).click()
+
+      await expect(page.locator('.blog').nth(0)).toContainText('Second Blog')
+
+      await firstBlogDiv.getByRole('button', { name: 'like this post' }).click()
+      await firstBlogDiv.getByRole('button', { name: 'like this post' }).click()
+
+      await expect(page.locator('.blog').nth(0)).toContainText('Test Title')
+    })
   })
 })
