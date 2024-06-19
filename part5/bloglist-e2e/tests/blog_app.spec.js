@@ -71,5 +71,18 @@ describe('Blog app', () => {
       await expect(messageDiv).toContainText(`You liked Test Title, it has now ${initialLikes + 1} likes`)
       await expect(page.getByText(`${initialLikes + 1} like this post`)).toBeVisible()
     })
+
+    test('a blog can be deleted by the user that added the blog', async ({ page }) => {
+      await page.getByRole('button', { name: 'view' }).click();
+      page.once('dialog', dialog => {
+        console.log(`Dialog message: ${dialog.message()}`);
+        dialog.accept()
+      });
+      await page.getByRole('button', { name: 'remove blog' }).click();
+      const messageDiv = await page.locator('.message')
+      await expect(messageDiv).toContainText('Test Title was removed')
+
+      await expect(page.getByText('Test Title Test Author')).not.toBeVisible()
+    })
   })
 })
