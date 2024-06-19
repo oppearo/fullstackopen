@@ -1,5 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
-const { loginWith } = require('./helper')
+const { loginWith, addBlog } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -31,6 +31,26 @@ describe('Blog app', () => {
       const errorDiv = await page.locator('.error')
       await expect(errorDiv).toContainText('Error: invalid username or password')
       await expect(page.getByText('Test User logged in')).not.toBeVisible()
+    })
+  })
+
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      await loginWith(page, 'TestUser', 'password123')
+    })
+
+    test('a new blog can be created', async ({ page }) => {
+      const blogTitle = 'Test Title'
+      const blogAuthor = 'Test Author'
+      const blogUrl = 'http://example.com'
+      await addBlog(page, blogTitle, blogAuthor, blogUrl)
+
+      const messageDiv = await page.locator('.message')
+      await expect(messageDiv).toContainText(`a new blog ${blogTitle} by ${blogAuthor} was added`)
+
+      await expect(page.getByText(`${blogTitle} ${blogAuthor}`)).toBeVisible()
+      await page.getByRole('button', { name: 'view' }).click();
+      await expect(page.getByText(`${blogUrl}`)).toBeVisible();
     })
   })
 })
