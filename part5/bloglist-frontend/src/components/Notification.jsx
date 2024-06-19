@@ -20,8 +20,8 @@ const Notification = ({ message, isError }) => {
 
   return (
     <div>
-      {message && isError && <h3 style={errorStyle}>{`Error: ${message}`}</h3>}
-      {message && !isError && <h3 style={messageStyle}>{message}</h3>}
+      {message && isError && <h3 style={errorStyle} className="error">{`Error: ${message}`}</h3>}
+      {message && !isError && <h3 style={messageStyle} className="message">{message}</h3>}
     </div>
   )
 }
