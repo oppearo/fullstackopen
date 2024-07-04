@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  Routes, Route, Link, useMatch
+  Routes, Route, Link, useMatch, useNavigate
 } from 'react-router-dom'
 
 const Menu = () => {
@@ -98,6 +98,7 @@ const CreateNew = (props) => {
 }
 
 const App = () => {
+  const navigate = useNavigate()
   const [anecdotes, setAnecdotes] = useState([
     {
       content: 'If it hurts, do it more often',
@@ -120,6 +121,9 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
+    setNotification(`a new anecdote ${anecdote.content} was created!`)
+    setTimeout(() => setNotification(''), 5000)
+    navigate('/')
   }
 
   const anecdoteById = (id) =>
@@ -145,6 +149,9 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      {notification 
+      ? <p>{notification}</p>
+      : null}
       <Routes>
         <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />}/>
         <Route path='/about' element={<About />}/>
