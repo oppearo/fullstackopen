@@ -6,16 +6,16 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import { useDispatch } from 'react-redux'
+import { showErrorMessage, showSuccessMessage } from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [message, setMessage] = useState(null)
-  const [messageIsError, setMessageIsError] = useState(null)
-
   const blogFormRef = useRef()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -41,11 +41,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (e) {
-      setMessageIsError(true)
-      setMessage(`${e.response.data.error}`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 8000)
+      dispatch(showErrorMessage(`${e.response.data.error}`))
     }
   }
 
@@ -55,24 +51,13 @@ const App = () => {
       blogService
         .create(blogObject)
         .then((returnedBlog) => setBlogs(blogs.concat(returnedBlog)))
-        .then(setMessageIsError(false))
         .then(
-          setMessage(
-            `a new blog ${blogObject.title} by ${blogObject.author} was added`
+          dispatch(
+            showSuccessMessage(`a new blog ${blogObject.title} by ${blogObject.author} was added`)
           )
         )
-        .then(
-          setTimeout(() => {
-            setMessage(null)
-          }, 8000)
-        )
     } catch (e) {
-      setMessageIsError(true)
-      setMessage(`${e.response.data.error}`)
-      setTimeout(() => {
-        setMessage(null)
-        setMessageIsError(null)
-      }, 8000)
+      dispatch(showErrorMessage(`${e.response.data.error}`))
     }
   }
 
@@ -82,24 +67,15 @@ const App = () => {
       console.log(`likes of ${blogObject.title} are now ${blogObject.likes}`)
       blogService
         .update(blogObject)
-        .then(setMessageIsError(false))
         .then(
-          setMessage(
-            `You liked ${blogObject.title}, it has now ${blogObject.likes} likes`
+          dispatch(
+            showSuccessMessage(
+              `You liked ${blogObject.title}, it has now ${blogObject.likes} likes`
+            )
           )
         )
-        .then(
-          setTimeout(() => {
-            setMessage(null)
-          }, 8000)
-        )
     } catch (e) {
-      setMessageIsError(true)
-      setMessage(`${e.response.data.error}`)
-      setTimeout(() => {
-        setMessage(null)
-        setMessageIsError(null)
-      }, 8000)
+      dispatch(showErrorMessage(`${e.response.data.error}`))
     }
   }
 
@@ -108,28 +84,17 @@ const App = () => {
       console.log(`removing blog ${id}`)
       blogService
         .remove(id)
-        .then(setMessageIsError(false))
-        .then(setMessage(`${title} was removed`))
-        .then(
-          setTimeout(() => {
-            setMessage(null)
-          }, 8000)
-        )
+        .then(dispatch(showSuccessMessage(`${title} was removed`)))
         .then(setBlogs(blogs.filter((b) => b.id !== id)))
     } catch (e) {
-      setMessageIsError(true)
-      setMessage(`${e.response.data.error}`)
-      setTimeout(() => {
-        setMessage(null)
-        setMessageIsError(null)
-      }, 8000)
+      dispatch(showErrorMessage(`${e.response.data.error}`))
     }
   }
 
   if (user === null) {
     return (
       <div>
-        <Notification message={message} isError={messageIsError} />
+        <Notification />
         <LoginForm
           username={username}
           password={password}
@@ -144,7 +109,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={message} isError={messageIsError} />
+      <Notification />
       <p>
         {`${user.name} logged in`}
         <button
