@@ -6,20 +6,21 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { showErrorMessage, showSuccessMessage } from './reducers/notificationReducer'
+import { createBlog, initializeBlogs } from './reducers/blogReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const blogFormRef = useRef()
   const dispatch = useDispatch()
+  const blogs = useSelector((state) => state.blogs)
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const loggedInUserJSON = window.localStorage.getItem('loggedBlogApiUser')
@@ -48,14 +49,11 @@ const App = () => {
   const addBlog = (blogObject) => {
     try {
       blogFormRef.current.toggleVisibility()
-      blogService
-        .create(blogObject)
-        .then((returnedBlog) => setBlogs(blogs.concat(returnedBlog)))
-        .then(
-          dispatch(
-            showSuccessMessage(`a new blog ${blogObject.title} by ${blogObject.author} was added`)
-          )
+      dispatch(createBlog(blogObject)).then(
+        dispatch(
+          showSuccessMessage(`a new blog ${blogObject.title} by ${blogObject.author} was added`)
         )
+      )
     } catch (e) {
       dispatch(showErrorMessage(`${e.response.data.error}`))
     }
@@ -126,7 +124,6 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs
-        .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
           <Blog
             key={blog.id}
@@ -135,7 +132,8 @@ const App = () => {
             removeBlog={removeBlog}
             activeUser={user.username}
           />
-        ))}
+        ))
+        .sort((a, b) => b.likes - a.likes)}
     </div>
   )
 }

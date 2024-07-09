@@ -13,7 +13,6 @@ const BlogForm = ({ createBlog }) => {
       author: blogAuthor,
       url: blogUrl,
     }
-    console.log(blogObject)
     createBlog(blogObject)
     setBlogTitle('')
     setBlogAuthor('')
