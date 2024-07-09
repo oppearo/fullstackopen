@@ -7,7 +7,10 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import { useDispatch, useSelector } from 'react-redux'
-import { showErrorMessage, showSuccessMessage } from './reducers/notificationReducer'
+import {
+  showErrorMessage,
+  showSuccessMessage,
+} from './reducers/notificationReducer'
 import { createBlog, initializeBlogs } from './reducers/blogReducer'
 
 const App = () => {
@@ -51,39 +54,11 @@ const App = () => {
       blogFormRef.current.toggleVisibility()
       dispatch(createBlog(blogObject)).then(
         dispatch(
-          showSuccessMessage(`a new blog ${blogObject.title} by ${blogObject.author} was added`)
-        )
-      )
-    } catch (e) {
-      dispatch(showErrorMessage(`${e.response.data.error}`))
-    }
-  }
-
-  const addLike = (blogObject) => {
-    try {
-      blogObject.likes = blogObject.likes + 1
-      console.log(`likes of ${blogObject.title} are now ${blogObject.likes}`)
-      blogService
-        .update(blogObject)
-        .then(
-          dispatch(
-            showSuccessMessage(
-              `You liked ${blogObject.title}, it has now ${blogObject.likes} likes`
-            )
+          showSuccessMessage(
+            `a new blog ${blogObject.title} by ${blogObject.author} was added`
           )
         )
-    } catch (e) {
-      dispatch(showErrorMessage(`${e.response.data.error}`))
-    }
-  }
-
-  const removeBlog = (id, title) => {
-    try {
-      console.log(`removing blog ${id}`)
-      blogService
-        .remove(id)
-        .then(dispatch(showSuccessMessage(`${title} was removed`)))
-        .then(setBlogs(blogs.filter((b) => b.id !== id)))
+      )
     } catch (e) {
       dispatch(showErrorMessage(`${e.response.data.error}`))
     }
@@ -123,17 +98,9 @@ const App = () => {
       <Togglable buttonLabel="new blog" ref={blogFormRef}>
         <BlogForm createBlog={addBlog} />
       </Togglable>
-      {blogs
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            addLike={addLike}
-            removeBlog={removeBlog}
-            activeUser={user.username}
-          />
-        ))
-        .sort((a, b) => b.likes - a.likes)}
+      {blogs.map((blog) => (
+        <Blog key={blog.id} blog={blog} activeUser={user.username} />
+      ))}
     </div>
   )
 }

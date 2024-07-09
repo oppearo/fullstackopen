@@ -22,7 +22,8 @@ const notificationSlice = createSlice({
   },
 })
 
-export const { setError, setSuccess, clearNotification } = notificationSlice.actions
+export const { setError, setSuccess, clearNotification } =
+  notificationSlice.actions
 
 export const showErrorMessage = (message) => {
   return (dispatch) => {

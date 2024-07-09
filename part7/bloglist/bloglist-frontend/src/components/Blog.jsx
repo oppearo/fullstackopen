@@ -1,7 +1,14 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { handleRemove, likeBlog } from '../reducers/blogReducer'
+import {
+  showSuccessMessage,
+  showErrorMessage,
+} from '../reducers/notificationReducer'
 
-const Blog = ({ blog, addLike, removeBlog, activeUser }) => {
+const Blog = ({ blog, activeUser }) => {
+  const dispatch = useDispatch()
   const [visible, setVisible] = useState(false)
   const blogStyle = {
     paddingTop: 10,
@@ -25,15 +32,29 @@ const Blog = ({ blog, addLike, removeBlog, activeUser }) => {
     return <p></p>
   }
 
-  const likeBlog = (event) => {
+  const addLike = (event) => {
     event.preventDefault()
-    addLike(blog)
+    try {
+      dispatch(likeBlog(blog.id))
+      dispatch(
+        showSuccessMessage(
+          `You liked ${blog.title}, it has now ${blog.likes + 1} likes`
+        )
+      )
+    } catch (e) {
+      dispatch(showErrorMessage(`${e.response.data.error}`))
+    }
   }
 
   const deleteBlog = (event) => {
     event.preventDefault()
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
-      removeBlog(blog.id, blog.title)
+    try {
+      if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+        dispatch(handleRemove(blog.id))
+        dispatch(showSuccessMessage(`${blog.title} was removed`))
+      }
+    } catch (e) {
+      dispatch(showErrorMessage(`${e.response.data.error}`))
     }
   }
 
@@ -50,7 +71,7 @@ const Blog = ({ blog, addLike, removeBlog, activeUser }) => {
         {blog.url}
         <p>
           {' '}
-          {blog.likes} <button onClick={likeBlog}>like this post</button>{' '}
+          {blog.likes} <button onClick={addLike}>like this post</button>{' '}
         </p>
         {blog.user.name}
         {checkCorrectUser()}
@@ -60,8 +81,6 @@ const Blog = ({ blog, addLike, removeBlog, activeUser }) => {
 }
 
 Blog.propTypes = {
-  addLike: PropTypes.func.isRequired,
-  removeBlog: PropTypes.func.isRequired,
   activeUser: PropTypes.string.isRequired,
 }
 

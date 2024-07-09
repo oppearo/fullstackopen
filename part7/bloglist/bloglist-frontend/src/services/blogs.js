@@ -21,14 +21,19 @@ const create = async (newObject) => {
   return response.data
 }
 
-const update = async (blogObject) => {
+const like = async (id) => {
   const config = {
     headers: { Authorization: token },
   }
+  const url = baseUrl + `/${id}`
+  const blogObject = await axios.get(url)
+  const likedBlog = { ...blogObject.data, likes: blogObject.data.likes + 1 }
 
-  console.log(`sending PUT to ${baseUrl}/${blogObject.id}`)
+  console.log(
+    `sending PUT to ${baseUrl}/${id} with likes updated from ${blogObject.data.likes} to ${likedBlog.likes}`
+  )
 
-  const response = await axios.put(`${baseUrl}/${blogObject.id}`, blogObject, config)
+  const response = await axios.put(url, likedBlog, config)
   return response.data
 }
 
@@ -43,4 +48,4 @@ const remove = async (id) => {
   return response.data
 }
 
-export default { getAll, create, update, remove, setToken }
+export default { getAll, create, like, remove, setToken }
