@@ -5,19 +5,28 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import Users from './components/Users'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   showErrorMessage,
   showSuccessMessage,
 } from './reducers/notificationReducer'
 import { createBlog, initializeBlogs } from './reducers/blogReducer'
-import { initUser, setUser } from './reducers/userReducer'
+import { initUser, setUser } from './reducers/loginReducer'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+} from 'react-router-dom'
 
 const App = () => {
   const blogFormRef = useRef()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const blogs = useSelector((state) => state.blogs)
-  const user = useSelector((state) => state.user)
+  const user = useSelector((state) => state.login)
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -35,6 +44,7 @@ const App = () => {
       dispatch(setUser(JSON.stringify(user)))
       dispatch(showSuccessMessage(`${user.name} logged in successfully!`))
       dispatch(initUser()) // ugly hack to set user right away correctly
+      navigate('/')
     } catch (e) {
       dispatch(showErrorMessage(`${e.response.data.error}`))
     }
@@ -55,19 +65,8 @@ const App = () => {
     }
   }
 
-  if (user === null) {
+  const UserInfoElement = () => {
     return (
-      <div>
-        <Notification />
-        <LoginForm handleLogin={handleLogin} />
-      </div>
-    )
-  }
-
-  return (
-    <div>
-      <h2>blogs</h2>
-      <Notification />
       <p>
         {`${user.name} logged in`}
         <button
@@ -81,12 +80,40 @@ const App = () => {
           logout
         </button>
       </p>
-      <Togglable buttonLabel="new blog" ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+    )
+  }
+
+  const MainPageElement = () => {
+    return (
+      <div>
+        <Togglable buttonLabel="new blog" ref={blogFormRef}>
+          <BlogForm createBlog={addBlog} />
+        </Togglable>
+        {blogs.map((blog) => (
+          <Blog key={blog.id} blog={blog} />
+        ))}
+      </div>
+    )
+  }
+
+  if (user === null) {
+    return (
+      <div>
+        <Notification />
+        <LoginForm handleLogin={handleLogin} />
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <h2>blogs</h2>
+      <Notification />
+      <UserInfoElement />
+      <Routes>
+        <Route path="/" element={<MainPageElement />} />
+        <Route path="/users" element={<Users />} />
+      </Routes>
     </div>
   )
 }
