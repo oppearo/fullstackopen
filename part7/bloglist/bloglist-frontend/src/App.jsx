@@ -15,6 +15,7 @@ import { createBlog, initializeBlogs } from './reducers/blogReducer'
 import { initUser, setUser } from './reducers/loginReducer'
 import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
 import UserInfo from './components/UserInfo.Jsx'
+import Menu from './components/Menu'
 
 const App = () => {
   const blogFormRef = useRef()
@@ -71,24 +72,6 @@ const App = () => {
     }
   }
 
-  const UserInfoElement = () => {
-    return (
-      <p>
-        {`${user.name} logged in`}
-        <button
-          type="submit"
-          onClick={() => {
-            dispatch(setUser(null))
-            window.localStorage.removeItem('loggedBlogApiUser')
-            window.location.reload()
-          }}
-        >
-          logout
-        </button>
-      </p>
-    )
-  }
-
   const MainPageElement = () => {
     return (
       <div>
@@ -117,9 +100,9 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
+      <Menu user={user.name} />
+      <h2>blog app</h2>
       <Notification />
-      <UserInfoElement />
       <Routes>
         <Route path="/" element={<MainPageElement />} />
         <Route path="/users/*" element={<UserList />} />
