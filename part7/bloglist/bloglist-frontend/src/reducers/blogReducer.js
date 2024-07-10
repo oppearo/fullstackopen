@@ -19,7 +19,6 @@ const blogSlice = createSlice({
         ...toBeLiked,
         likes: toBeLiked.likes + 1,
       }
-      console.log(JSON.parse(JSON.stringify(state)))
       return state
         .map((blog) => (blog.id !== id ? blog : likedBlog))
         .sort((a, b) => b.likes - a.likes)

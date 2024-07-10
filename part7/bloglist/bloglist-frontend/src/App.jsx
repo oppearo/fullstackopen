@@ -5,7 +5,7 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
-import Users from './components/Users'
+import UserList from './components/UserList'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   showErrorMessage,
@@ -20,6 +20,7 @@ import {
   Link,
   useNavigate,
 } from 'react-router-dom'
+import UserInfo from './components/UserInfo.Jsx'
 
 const App = () => {
   const blogFormRef = useRef()
@@ -112,7 +113,8 @@ const App = () => {
       <UserInfoElement />
       <Routes>
         <Route path="/" element={<MainPageElement />} />
-        <Route path="/users" element={<Users />} />
+        <Route path="/users/*" element={<UserList />} />
+        <Route path="/users/:id" element={<UserInfo />} />
       </Routes>
     </div>
   )
