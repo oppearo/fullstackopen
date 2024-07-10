@@ -13,13 +13,7 @@ import {
 } from './reducers/notificationReducer'
 import { createBlog, initializeBlogs } from './reducers/blogReducer'
 import { initUser, setUser } from './reducers/loginReducer'
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  useNavigate,
-} from 'react-router-dom'
+import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
 import UserInfo from './components/UserInfo.Jsx'
 
 const App = () => {
@@ -28,6 +22,17 @@ const App = () => {
   const navigate = useNavigate()
   const blogs = useSelector((state) => state.blogs)
   const user = useSelector((state) => state.login)
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5,
+  }
+  const blogMatch = useMatch('/blogs/:id')
+  const matchedBlog = blogMatch
+    ? blogs.find((blog) => blog.id === blogMatch.params.id)
+    : null
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -91,7 +96,11 @@ const App = () => {
           <BlogForm createBlog={addBlog} />
         </Togglable>
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
+          <p key={blog.id} style={blogStyle}>
+            <Link to={`/blogs/${blog.id}`}>
+              {blog.title} {blog.author}
+            </Link>
+          </p>
         ))}
       </div>
     )
@@ -115,6 +124,7 @@ const App = () => {
         <Route path="/" element={<MainPageElement />} />
         <Route path="/users/*" element={<UserList />} />
         <Route path="/users/:id" element={<UserInfo />} />
+        <Route path="/blogs/:id" element={<Blog blog={matchedBlog} />} />
       </Routes>
     </div>
   )

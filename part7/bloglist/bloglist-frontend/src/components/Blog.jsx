@@ -1,16 +1,17 @@
+/* eslint-disable react/prop-types */
 import { React, useState } from 'react'
-import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { handleRemove, likeBlog } from '../reducers/blogReducer'
 import {
   showSuccessMessage,
   showErrorMessage,
 } from '../reducers/notificationReducer'
+import { useNavigate } from 'react-router-dom'
 
 const Blog = ({ blog }) => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const user = useSelector((state) => state.login)
-  const [visible, setVisible] = useState(false)
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -18,13 +19,6 @@ const Blog = ({ blog }) => {
     borderWidth: 1,
     marginBottom: 5,
   }
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
-
-  const toggleVisibility = () => {
-    setVisible(!visible)
-  }
-
   const checkCorrectUser = () => {
     if (user.username === blog.user.username) {
       return <button onClick={deleteBlog}>remove blog</button>
@@ -53,36 +47,33 @@ const Blog = ({ blog }) => {
       if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
         dispatch(handleRemove(blog.id))
         dispatch(showSuccessMessage(`${blog.title} was removed`))
+        navigate('/')
       }
     } catch (e) {
       dispatch(showErrorMessage(`${e.response.data.error}`))
     }
   }
 
+  if (!blog) {
+    return null
+  }
+
   return (
     <div style={blogStyle} className="blog">
-      {blog.title} {blog.author}
-      <button onClick={toggleVisibility} style={hideWhenVisible}>
-        view
-      </button>
-      <button onClick={toggleVisibility} style={showWhenVisible}>
-        hide
-      </button>
-      <div style={showWhenVisible}>
-        {blog.url}
+      <h2>
+        {blog.title} by &lsquo;{blog.author}&lsquo;
+      </h2>
+      <div>
+        <a href={`${blog.url}`}>{blog.url}</a>
         <p>
           {' '}
           {blog.likes} <button onClick={addLike}>like this post</button>{' '}
         </p>
-        {blog.user.name}
+        added by {blog.user.name}
         {checkCorrectUser()}
       </div>
     </div>
   )
-}
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
 }
 
 export default Blog
