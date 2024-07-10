@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { React, useState } from 'react'
 import PropTypes from 'prop-types'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { handleRemove, likeBlog } from '../reducers/blogReducer'
 import {
   showSuccessMessage,
   showErrorMessage,
 } from '../reducers/notificationReducer'
 
-const Blog = ({ blog, activeUser }) => {
+const Blog = ({ blog }) => {
   const dispatch = useDispatch()
+  const user = useSelector((state) => state.user)
   const [visible, setVisible] = useState(false)
   const blogStyle = {
     paddingTop: 10,
@@ -25,7 +26,7 @@ const Blog = ({ blog, activeUser }) => {
   }
 
   const checkCorrectUser = () => {
-    if (activeUser === blog.user.username) {
+    if (user.username === blog.user.username) {
       return <button onClick={deleteBlog}>remove blog</button>
     }
 
@@ -39,7 +40,7 @@ const Blog = ({ blog, activeUser }) => {
       dispatch(
         showSuccessMessage(
           `You liked ${blog.title}, it has now ${blog.likes + 1} likes`
-        )
+        ) // hate this +1 stuff
       )
     } catch (e) {
       dispatch(showErrorMessage(`${e.response.data.error}`))
@@ -81,7 +82,7 @@ const Blog = ({ blog, activeUser }) => {
 }
 
 Blog.propTypes = {
-  activeUser: PropTypes.string.isRequired,
+  blog: PropTypes.object.isRequired,
 }
 
 export default Blog

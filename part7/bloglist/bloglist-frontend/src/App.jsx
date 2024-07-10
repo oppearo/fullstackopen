@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+import { React, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
-import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
@@ -12,38 +11,30 @@ import {
   showSuccessMessage,
 } from './reducers/notificationReducer'
 import { createBlog, initializeBlogs } from './reducers/blogReducer'
+import { initUser, setUser } from './reducers/userReducer'
 
 const App = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
   const blogFormRef = useRef()
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
+  const user = useSelector((state) => state.user)
 
   useEffect(() => {
     dispatch(initializeBlogs())
   }, [dispatch])
 
   useEffect(() => {
-    const loggedInUserJSON = window.localStorage.getItem('loggedBlogApiUser')
-    if (loggedInUserJSON) {
-      const user = JSON.parse(loggedInUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
-  }, [])
+    dispatch(initUser())
+  }, [dispatch])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const handleLogin = async (username, password) => {
     console.log('login attempted with ', username, password)
     try {
       const user = await loginService.login({ username, password })
       window.localStorage.setItem('loggedBlogApiUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
+      dispatch(setUser(JSON.stringify(user)))
+      dispatch(showSuccessMessage(`${user.name} logged in successfully!`))
+      dispatch(initUser()) // ugly hack to set user right away correctly
     } catch (e) {
       dispatch(showErrorMessage(`${e.response.data.error}`))
     }
@@ -68,13 +59,7 @@ const App = () => {
     return (
       <div>
         <Notification />
-        <LoginForm
-          username={username}
-          password={password}
-          handleUsernameChange={({ target }) => setUsername(target.value)}
-          handlePasswordChange={({ target }) => setPassword(target.value)}
-          handleSubmit={handleLogin}
-        />
+        <LoginForm handleLogin={handleLogin} />
       </div>
     )
   }
@@ -88,6 +73,7 @@ const App = () => {
         <button
           type="submit"
           onClick={() => {
+            dispatch(setUser(null))
             window.localStorage.removeItem('loggedBlogApiUser')
             window.location.reload()
           }}
@@ -99,7 +85,7 @@ const App = () => {
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} activeUser={user.username} />
+        <Blog key={blog.id} blog={blog} />
       ))}
     </div>
   )
