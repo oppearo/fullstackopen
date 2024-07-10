@@ -3,41 +3,27 @@ import Blog from './components/Blog'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
-import BlogForm from './components/BlogForm'
-import Togglable from './components/Togglable'
 import UserList from './components/UserList'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   showErrorMessage,
   showSuccessMessage,
 } from './reducers/notificationReducer'
-import { createBlog, initializeBlogs } from './reducers/blogReducer'
 import { initUser, setUser } from './reducers/loginReducer'
 import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
 import UserInfo from './components/UserInfo.Jsx'
 import Menu from './components/Menu'
+import BlogsList from './components/BlogsList'
 
 const App = () => {
-  const blogFormRef = useRef()
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const blogs = useSelector((state) => state.blogs)
   const user = useSelector((state) => state.login)
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
   const blogMatch = useMatch('/blogs/:id')
   const matchedBlog = blogMatch
     ? blogs.find((blog) => blog.id === blogMatch.params.id)
     : null
-
-  useEffect(() => {
-    dispatch(initializeBlogs())
-  }, [dispatch])
 
   useEffect(() => {
     dispatch(initUser())
@@ -57,38 +43,6 @@ const App = () => {
     }
   }
 
-  const addBlog = (blogObject) => {
-    try {
-      blogFormRef.current.toggleVisibility()
-      dispatch(createBlog(blogObject)).then(
-        dispatch(
-          showSuccessMessage(
-            `a new blog ${blogObject.title} by ${blogObject.author} was added`
-          )
-        )
-      )
-    } catch (e) {
-      dispatch(showErrorMessage(`${e.response.data.error}`))
-    }
-  }
-
-  const MainPageElement = () => {
-    return (
-      <div>
-        <Togglable buttonLabel="new blog" ref={blogFormRef}>
-          <BlogForm createBlog={addBlog} />
-        </Togglable>
-        {blogs.map((blog) => (
-          <p key={blog.id} style={blogStyle}>
-            <Link to={`/blogs/${blog.id}`}>
-              {blog.title} {blog.author}
-            </Link>
-          </p>
-        ))}
-      </div>
-    )
-  }
-
   if (user === null) {
     return (
       <div>
@@ -104,7 +58,7 @@ const App = () => {
       <h2>blog app</h2>
       <Notification />
       <Routes>
-        <Route path="/" element={<MainPageElement />} />
+        <Route path="/" element={<BlogsList />} />
         <Route path="/users/*" element={<UserList />} />
         <Route path="/users/:id" element={<UserInfo />} />
         <Route path="/blogs/:id" element={<Blog blog={matchedBlog} />} />
