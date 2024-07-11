@@ -1,3 +1,4 @@
+import { Alert } from '@mui/material'
 import { useSelector } from 'react-redux'
 
 const Notification = () => {
@@ -24,12 +25,10 @@ const Notification = () => {
 
   return (
     <div>
-      {message && isError && <h3 style={errorStyle} className="error">{`Error: ${message}`}</h3>}
-      {message && !isError && (
-        <h3 style={messageStyle} className="message">
-          {message}
-        </h3>
+      {message && isError && (
+        <Alert severity="error">{`Error: ${message}`}</Alert>
       )}
+      {message && !isError && <Alert severity="success">{message}</Alert>}
     </div>
   )
 }

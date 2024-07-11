@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { React, useState } from 'react'
+import { Button } from '@mui/material'
 
 const LoginForm = ({ handleLogin }) => {
   const [username, setUsername] = useState('')
@@ -33,7 +34,7 @@ const LoginForm = ({ handleLogin }) => {
             data-testid="password"
           />
         </div>
-        <button type="submit">login</button>
+        <Button type="submit">login</Button>
       </form>
     </div>
   )

@@ -7,6 +7,10 @@ import {
   showErrorMessage,
 } from '../reducers/notificationReducer'
 import { useNavigate } from 'react-router-dom'
+import { Button, TextField } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
+import { ThumbUp } from '@mui/icons-material'
+import SendIcon from '@mui/icons-material/Send'
 
 const Blog = ({ blog }) => {
   const dispatch = useDispatch()
@@ -23,7 +27,16 @@ const Blog = ({ blog }) => {
 
   const checkCorrectUser = () => {
     if (user.username === blog.user.username) {
-      return <button onClick={deleteBlog}>remove blog</button>
+      return (
+        <Button
+          onClick={deleteBlog}
+          startIcon={<DeleteIcon />}
+          variant="contained"
+          sx={{ m: 1 }}
+        >
+          remove blog
+        </Button>
+      )
     }
 
     return <p></p>
@@ -60,7 +73,11 @@ const Blog = ({ blog }) => {
     event.preventDefault()
     const submittedObject = { id: blog.id, comment: comment }
     dispatch(commentBlog(submittedObject))
-    dispatch(showSuccessMessage(`added comment '${comment}' successfully`))
+    dispatch(
+      showSuccessMessage(
+        `added comment '${comment}' to ${blog.title} successfully`
+      )
+    )
     setComment('')
   }
 
@@ -76,21 +93,31 @@ const Blog = ({ blog }) => {
       <div>
         <a href={`${blog.url}`}>{blog.url}</a>
         <p>
-          {' '}
-          {blog.likes} <button onClick={addLike}>like this post</button>{' '}
+          {blog.likes}
+          {blog.likes === 1 ? ' like' : ' likes'}{' '}
+          <Button onClick={addLike} variant="contained" startIcon={<ThumbUp />}>
+            like
+          </Button>{' '}
         </p>
         added by {blog.user.name}
         {checkCorrectUser()}
       </div>
       <h3>comments</h3>
       <form onSubmit={addComment}>
-        <input
+        <TextField
           type="text"
           name="comment"
           value={comment}
           onChange={({ target }) => setComment(target.value)}
-        ></input>
-        <button type="submit">add comment</button>
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{ m: 1 }}
+          startIcon={<SendIcon />}
+        >
+          add comment
+        </Button>
       </form>
       <ul>
         {blog.comments.map((comment) => (

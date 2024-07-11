@@ -6,7 +6,7 @@ const userlistSlice = createSlice({
   initialState: [],
   reducers: {
     setUsers(state, action) {
-      return action.payload
+      return action.payload.sort((a, b) => b.blogs.length - a.blogs.length)
     },
   },
 })

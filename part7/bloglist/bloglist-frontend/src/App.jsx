@@ -14,6 +14,7 @@ import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
 import UserInfo from './components/UserInfo.Jsx'
 import Menu from './components/Menu'
 import BlogsList from './components/BlogsList'
+import { Container, Typography } from '@mui/material'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -53,17 +54,21 @@ const App = () => {
   }
 
   return (
-    <div>
-      <Menu user={user.name} />
-      <h2>blog app</h2>
-      <Notification />
-      <Routes>
-        <Route path="/" element={<BlogsList />} />
-        <Route path="/users/*" element={<UserList />} />
-        <Route path="/users/:id" element={<UserInfo />} />
-        <Route path="/blogs/:id" element={<Blog blog={matchedBlog} />} />
-      </Routes>
-    </div>
+    <Container>
+      <div>
+        <Menu user={user.name} />
+        <Notification />
+        <Typography variant="h3" component={'span'}>
+          <h2>blog app</h2>
+        </Typography>
+        <Routes>
+          <Route path="/" element={<BlogsList />} />
+          <Route path="/users/*" element={<UserList />} />
+          <Route path="/users/:id" element={<UserInfo />} />
+          <Route path="/blogs/:id" element={<Blog blog={matchedBlog} />} />
+        </Routes>
+      </div>
+    </Container>
   )
 }
 

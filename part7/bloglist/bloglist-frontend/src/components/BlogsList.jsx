@@ -8,6 +8,7 @@ import {
   showSuccessMessage,
   showErrorMessage,
 } from '../reducers/notificationReducer'
+import { Typography } from '@mui/material'
 
 const BlogsList = () => {
   const blogStyle = {
@@ -44,13 +45,15 @@ const BlogsList = () => {
 
   return (
     <div>
-      <Togglable buttonLabel="new blog">
+      <Togglable buttonLabel="add a new blog">
         <BlogForm createBlog={addBlog} />
       </Togglable>
       {blogs.map((blog) => (
         <p key={blog.id} style={blogStyle}>
           <Link to={`/blogs/${blog.id}`}>
-            {blog.title}, {blog.author}
+            <Typography component={'span'}>
+              {blog.title}, {blog.author}
+            </Typography>
           </Link>
         </p>
       ))}

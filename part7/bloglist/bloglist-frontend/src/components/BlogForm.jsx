@@ -1,5 +1,7 @@
 import { React, useState } from 'react'
 import PropTypes from 'prop-types'
+import { Button, TextField } from '@mui/material'
+import { SendIcon } from '@mui/icons-material/Send'
 
 const BlogForm = ({ createBlog }) => {
   const [blogTitle, setBlogTitle] = useState('')
@@ -24,8 +26,9 @@ const BlogForm = ({ createBlog }) => {
       <h2>create new</h2>
       <form onSubmit={addBlog}>
         <div>
-          title:
-          <input
+          <TextField
+            label={'title'}
+            margin="normal"
             type="text"
             name="title"
             placeholder="title goes here"
@@ -34,8 +37,9 @@ const BlogForm = ({ createBlog }) => {
           />
         </div>
         <div>
-          author:
-          <input
+          <TextField
+            label={'author'}
+            margin="normal"
             type="text"
             name="author"
             placeholder="author goes here"
@@ -44,8 +48,9 @@ const BlogForm = ({ createBlog }) => {
           />
         </div>
         <div>
-          url:
-          <input
+          <TextField
+            label={'url'}
+            margin="normal"
             type="url"
             name="url"
             placeholder="url goes here"
@@ -53,7 +58,14 @@ const BlogForm = ({ createBlog }) => {
             onChange={(e) => setBlogUrl(e.target.value)}
           />
         </div>
-        <button type="submit">submit</button>
+        <Button
+          type="submit"
+          color="primary"
+          variant="contained"
+          sx={{ mx: 'auto' }}
+        >
+          submit
+        </Button>
       </form>
     </div>
   )
