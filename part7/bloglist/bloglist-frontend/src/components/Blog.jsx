@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { React, useState } from 'react'
+import { React } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { handleRemove, likeBlog } from '../reducers/blogReducer'
 import {
@@ -34,7 +34,7 @@ const Blog = ({ blog }) => {
       dispatch(
         showSuccessMessage(
           `You liked ${blog.title}, it has now ${blog.likes + 1} likes`
-        ) // hate this +1 stuff
+        ) // hate this +1 workaround
       )
     } catch (e) {
       dispatch(showErrorMessage(`${e.response.data.error}`))
@@ -72,6 +72,12 @@ const Blog = ({ blog }) => {
         added by {blog.user.name}
         {checkCorrectUser()}
       </div>
+      <h3>comments</h3>
+      <ul>
+        {blog.comments.map((comment) => (
+          <li key={comment}>{comment}</li>
+        ))}
+      </ul>
     </div>
   )
 }

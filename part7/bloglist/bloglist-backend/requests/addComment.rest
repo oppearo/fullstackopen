@@ -1,0 +1,58 @@
+### First, add user (if not added already)
+# @name addUser
+POST http://localhost:3003/api/users
+content-type: application/json
+
+{
+  "username": "commentuser",
+  "password": "seppo123",
+  "name": "Comment User"
+}
+
+### Login required for user
+# @name login
+POST http://localhost:3003/api/login
+content-type: application/json
+
+{
+  "username": "{{addUser.request.body.username}}",
+  "password": "{{addUser.request.body.password}}"
+}
+
+### Get token
+@accessToken = {{login.response.body.token}}
+
+### Post new blog
+# @name postBlog
+POST http://localhost:3003/api/blogs
+content-type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "title": "Frank's Energy Drink Review",
+  "author": "Seppo Hovi",
+  "url": "http://www.example.com",
+  "likes": 69
+}
+
+### Post comment on said blog
+@blogId = {{postBlog.response.body.id}}
+
+POST http://localhost:3003/api/blogs/{{postBlog.response.body.id}}/comments
+content-type: application/json
+
+{
+  "comment": "Adding a comment"
+}
+
+### Post second comment on the same blog
+POST http://localhost:3003/api/blogs/{{postBlog.response.body.id}}/comments
+content-type: application/json
+
+{
+  "comment": "Adding a second comment"
+}
+
+### Delete said blog
+DELETE http://localhost:3003/api/blogs/{{postBlog.response.body.id}}
+Authorization: Bearer {{accessToken}}

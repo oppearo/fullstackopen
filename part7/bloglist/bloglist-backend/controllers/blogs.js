@@ -46,6 +46,8 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
 
   if (blog.user.toString() === user.id.toString()) {
     await Blog.findByIdAndDelete(request.params.id)
+    user.blogs = user.blogs.filter((blog) => blog.id !== request.params.id)
+    await user.save({ validateModifiedOnly: true })
     response.status(204).end()
   } else {
     return response.status(401).json({ error: 'permission denied' })
@@ -61,6 +63,14 @@ blogsRouter.put('/:id', async (request, response) => {
     { new: true, runValidators: true, context: 'query' }
   )
   response.json(updatedBlog)
+})
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const comment = request.body.comment
+  const blog = await Blog.findById(request.params.id)
+  blog.comments.push(comment)
+  await blog.save({ validateModifiedOnly: true })
+  response.status(201).json(blog)
 })
 
 module.exports = blogsRouter

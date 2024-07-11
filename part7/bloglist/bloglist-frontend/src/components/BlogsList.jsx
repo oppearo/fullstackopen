@@ -50,7 +50,7 @@ const BlogsList = () => {
       {blogs.map((blog) => (
         <p key={blog.id} style={blogStyle}>
           <Link to={`/blogs/${blog.id}`}>
-            {blog.title} {blog.author}
+            {blog.title}, {blog.author}
           </Link>
         </p>
       ))}
