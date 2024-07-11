@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
-import { React } from 'react'
+import { React, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { handleRemove, likeBlog } from '../reducers/blogReducer'
+import { commentBlog, handleRemove, likeBlog } from '../reducers/blogReducer'
 import {
   showSuccessMessage,
   showErrorMessage,
@@ -19,6 +19,8 @@ const Blog = ({ blog }) => {
     borderWidth: 1,
     marginBottom: 5,
   }
+  const [comment, setComment] = useState('')
+
   const checkCorrectUser = () => {
     if (user.username === blog.user.username) {
       return <button onClick={deleteBlog}>remove blog</button>
@@ -54,6 +56,14 @@ const Blog = ({ blog }) => {
     }
   }
 
+  const addComment = (event) => {
+    event.preventDefault()
+    const submittedObject = { id: blog.id, comment: comment }
+    dispatch(commentBlog(submittedObject))
+    dispatch(showSuccessMessage(`added comment '${comment}' successfully`))
+    setComment('')
+  }
+
   if (!blog) {
     return null
   }
@@ -73,6 +83,15 @@ const Blog = ({ blog }) => {
         {checkCorrectUser()}
       </div>
       <h3>comments</h3>
+      <form onSubmit={addComment}>
+        <input
+          type="text"
+          name="comment"
+          value={comment}
+          onChange={({ target }) => setComment(target.value)}
+        ></input>
+        <button type="submit">add comment</button>
+      </form>
       <ul>
         {blog.comments.map((comment) => (
           <li key={comment}>{comment}</li>
