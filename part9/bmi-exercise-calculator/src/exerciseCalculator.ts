@@ -1,6 +1,8 @@
+import { Params, parseArguments } from "./utils/parseArguments";
+
 interface ExerciseResult {
   periodLength: number;
-  trainingDayAmount: number;
+  trainingDays: number;
   averageTrainingTime: number;
   target: number;
   targetReached: boolean;
@@ -8,9 +10,14 @@ interface ExerciseResult {
   trainingRatingDescription: string;
 }
 
+interface ExerciseParameters {
+  targetValue: number;
+  exercises: number[];
+}
+
 const calculateExercises = (
-  dailyExercises: number[],
-  averageExerciseTarget: number
+  averageExerciseTarget: number,
+  dailyExercises: number[]
 ): ExerciseResult => {
   if (!dailyExercises?.length) {
     console.log("no exercise array provided!");
@@ -18,7 +25,7 @@ const calculateExercises = (
   }
   let resultObject: ExerciseResult = {
     periodLength: dailyExercises.length,
-    trainingDayAmount: dailyExercises.filter((num) => num > 0).length,
+    trainingDays: dailyExercises.filter((num) => num > 0).length,
     averageTrainingTime: 0,
     target: averageExerciseTarget,
     targetReached: false,
@@ -52,4 +59,13 @@ const calculateExercises = (
   return resultObject;
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+try {
+  const parms: Params = parseArguments(process.argv);
+  console.log(calculateExercises(parms.firstValue, parms.restOfValues));
+} catch (error: unknown) {
+  let errorMessage = "Something bad happened.";
+  if (error instanceof Error) {
+    errorMessage += " Error: " + error.message;
+  }
+  console.log(errorMessage);
+}
