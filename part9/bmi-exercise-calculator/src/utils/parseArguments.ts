@@ -5,7 +5,7 @@ export interface Params {
 
 export const parseArguments = (args: string[]): Params => {
   if (args.length < 4) throw new Error("Not enough arguments");
-  let returnObject: Params = {
+  const returnObject: Params = {
     firstValue: 0,
     restOfValues: [],
   };
@@ -15,8 +15,8 @@ export const parseArguments = (args: string[]): Params => {
     throw new Error("First parameter was not a number!");
   }
   const restOfValues = args.slice(3);
-  let temp: number[] = [];
-  for (let val of restOfValues) {
+  const temp: number[] = [];
+  for (const val of restOfValues) {
     if (!isNaN(Number(val))) {
       temp.push(Number(val));
     } else {

@@ -14,7 +14,7 @@ const calculateExercises = (
   averageExerciseTarget: number,
   dailyExercises: number[]
 ): ExerciseResult => {
-  let resultObject: ExerciseResult = {
+  const resultObject: ExerciseResult = {
     periodLength: dailyExercises.length,
     trainingDays: dailyExercises.filter((num) => num > 0).length,
     averageTrainingTime: 0,
