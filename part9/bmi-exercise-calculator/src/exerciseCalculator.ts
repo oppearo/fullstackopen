@@ -10,7 +10,7 @@ interface ExerciseResult {
   trainingRatingDescription: string;
 }
 
-const calculateExercises = (
+export const calculateExercises = (
   averageExerciseTarget: number,
   dailyExercises: number[]
 ): ExerciseResult => {
