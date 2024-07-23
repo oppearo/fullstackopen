@@ -10,19 +10,10 @@ interface ExerciseResult {
   trainingRatingDescription: string;
 }
 
-interface ExerciseParameters {
-  targetValue: number;
-  exercises: number[];
-}
-
 const calculateExercises = (
   averageExerciseTarget: number,
   dailyExercises: number[]
 ): ExerciseResult => {
-  if (!dailyExercises?.length) {
-    console.log("no exercise array provided!");
-    return null;
-  }
   let resultObject: ExerciseResult = {
     periodLength: dailyExercises.length,
     trainingDays: dailyExercises.filter((num) => num > 0).length,
