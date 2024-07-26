@@ -1,16 +1,43 @@
 import axios from "axios";
-import { DiaryEntry } from "../types";
+import { DiaryEntry, NewDiary } from "../types";
 
 const BASE_URL = "http://localhost:3000";
 
-const pingBackend = () => {
+const pingBackend = async () => {
   axios.get(`${BASE_URL}/ping`);
 };
 
-const getAll = () => {
-  return axios
-    .get<DiaryEntry[]>(`${BASE_URL}/api/diaries`)
-    .then((res) => res.data);
+const getAll = async () => {
+  try {
+    const response = await axios.get<DiaryEntry[]>(`${BASE_URL}/api/diaries`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new Error("not an Axios error");
+    }
+  }
 };
 
-export default { getAll, pingBackend };
+const createDiary = async (entry: NewDiary) => {
+  try {
+    const response = await axios.post<NewDiary>(
+      `${BASE_URL}/api/diaries`,
+      entry
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error);
+      throw error;
+    } else {
+      console.log(error);
+      throw new Error("Not an Axios error");
+    }
+  }
+};
+
+export default { getAll, pingBackend, createDiary };

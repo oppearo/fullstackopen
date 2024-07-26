@@ -6,7 +6,14 @@ interface DiaryEntriesProps {
 }
 
 const DiaryEntries = (props: DiaryEntriesProps) => {
-  return props.diaries.map((diary) => <Diary key={diary.id} entry={diary} />);
+  return (
+    <div>
+      <h3>Diary entries</h3>
+      {props.diaries.map((diary) => (
+        <Diary key={diary.id} entry={diary} />
+      ))}
+    </div>
+  );
 };
 
 export default DiaryEntries;
