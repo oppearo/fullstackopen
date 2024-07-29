@@ -1,4 +1,4 @@
-import { Gender, Patient } from "../types";
+import { Diagnosis, Gender, Patient } from "../types";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
@@ -9,9 +9,10 @@ import ListItemText from "@mui/material/ListItemText";
 
 interface PatientPageProps {
   patient: Patient | undefined;
+  diagnoses: Diagnosis[];
 }
 
-const PatientPage = ({ patient }: PatientPageProps) => {
+const PatientPage = ({ patient, diagnoses }: PatientPageProps) => {
   console.log(patient);
 
   if (!patient) {
@@ -29,6 +30,12 @@ const PatientPage = ({ patient }: PatientPageProps) => {
       default:
         return <p />;
     }
+  };
+
+  const diagnosisCodeToText = (diagnosisCode: string): string => {
+    const foundDiagnosis = diagnoses.find((d) => d.code === diagnosisCode);
+    if (!foundDiagnosis) return "unknown code";
+    return foundDiagnosis.name;
   };
 
   return (
@@ -56,7 +63,13 @@ const PatientPage = ({ patient }: PatientPageProps) => {
         })}
         {patient.entries.map((entry) => {
           return entry.diagnosisCodes?.map((diagnosis) => {
-            return <ListItem key={diagnosis}>{diagnosis}</ListItem>;
+            return (
+              <ListItem key={diagnosis}>
+                <Typography>
+                  {diagnosis} {diagnosisCodeToText(diagnosis)}
+                </Typography>
+              </ListItem>
+            );
           });
         })}
       </List>
