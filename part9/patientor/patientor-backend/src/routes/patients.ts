@@ -6,7 +6,17 @@ const router = express.Router();
 
 router.get("/", (_req, res) => {
   console.log("GET to /api/patients");
-  res.json(patientService.getPatientData());
+  res.json(patientService.getPatients());
+});
+
+router.get("/:id", (req, res) => {
+  console.log(`GET to patient id ${req.params.id}`);
+  const patient = patientService.findById(req.params.id);
+  if (patient) {
+    res.status(200).json(patient);
+  } else {
+    res.status(404).json({ error: "not found" });
+  }
 });
 
 router.post("/", (req, res) => {
