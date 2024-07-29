@@ -6,5 +6,20 @@ Content-Type: application/json
   "ssn": "120666-696X",
   "gender": "male",
   "occupation": "fashion mogul",
-  "dateOfBirth": "1966-06-12"
+  "dateOfBirth": "1966-06-12",
+  "entries": [
+      {
+        "id": "d811e46d-70b3-4d90-b090-4535c7cf8fb1",
+        "date": "2015-01-02",
+        "type": "Hospital",
+        "specialist": "MD House",
+        "diagnosisCodes": ["S62.5"],
+        "description":
+          "Healing time appr. 2 weeks. Caused by fist fight with Rick Forrester.",
+        "discharge": {
+          "date": "2015-01-16",
+          "criteria": "Thumb has healed."
+        }
+      }
+  ]
 }
