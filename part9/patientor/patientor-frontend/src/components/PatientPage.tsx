@@ -3,9 +3,8 @@ import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
 import { Box, Typography } from "@mui/material";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
+import { assertNever } from "../utils";
+import EntryDetails from "./EntryDetails";
 
 interface PatientPageProps {
   patient: Patient | undefined;
@@ -28,14 +27,8 @@ const PatientPage = ({ patient, diagnoses }: PatientPageProps) => {
       case Gender.Other:
         return <TransgenderIcon />;
       default:
-        return <p />;
+        return assertNever(gender);
     }
-  };
-
-  const diagnosisCodeToText = (diagnosisCode: string): string => {
-    const foundDiagnosis = diagnoses.find((d) => d.code === diagnosisCode);
-    if (!foundDiagnosis) return "unknown code";
-    return foundDiagnosis.name;
   };
 
   return (
@@ -49,30 +42,7 @@ const PatientPage = ({ patient, diagnoses }: PatientPageProps) => {
         ssn: {patient.ssn} <br />
         occupation: {patient.occupation} <br />
       </Typography>
-      <Typography variant="h5">entries</Typography>
-      <List>
-        {patient.entries.map((entry) => {
-          return (
-            <ListItem disablePadding key={entry.id}>
-              <ListItemText>{entry.date}</ListItemText>
-              <ListItemText sx={{ fontStyle: "italic" }}>
-                {entry.description}
-              </ListItemText>
-            </ListItem>
-          );
-        })}
-        {patient.entries.map((entry) => {
-          return entry.diagnosisCodes?.map((diagnosis) => {
-            return (
-              <ListItem key={diagnosis}>
-                <Typography>
-                  {diagnosis} {diagnosisCodeToText(diagnosis)}
-                </Typography>
-              </ListItem>
-            );
-          });
-        })}
-      </List>
+      <EntryDetails entries={patient.entries} diagnoses={diagnoses} />
     </div>
   );
 };
