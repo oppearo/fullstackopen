@@ -1,5 +1,5 @@
 import patientData from "../../data/patients";
-import { NewPatient, Patient } from "../types";
+import { Entry, EntryWithoutId, NewPatient, Patient } from "../types";
 import { v1 as uuid } from "uuid";
 
 const patients: Patient[] = patientData;
@@ -27,4 +27,20 @@ const addPatient = (entry: NewPatient): Patient => {
   return newPatient;
 };
 
-export default { getPatients, addPatient, findById };
+const addEntryToPatient = (patientId: string, entry: EntryWithoutId): Entry => {
+  const patient = findById(patientId);
+  if (patient) {
+    const id: string = uuid();
+    const newEntry = {
+      id: id,
+      ...entry,
+    };
+    patient.entries.push(newEntry);
+    return newEntry;
+  }
+  throw new Error(
+    "no patient found with ID " + patientId + " to add entry to!"
+  );
+};
+
+export default { getPatients, addPatient, findById, addEntryToPatient };

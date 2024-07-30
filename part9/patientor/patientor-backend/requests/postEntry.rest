@@ -1,0 +1,79 @@
+### Post a fresh patient first
+# @name addPatient
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+  "name": "Ridge Forrester",
+  "ssn": "120666-696X",
+  "gender": "male",
+  "occupation": "fashion mogul",
+  "dateOfBirth": "1966-06-12",
+  "entries": [
+      {
+        "id": "d811e46d-70b3-4d90-b090-4535c7cf8fb1",
+        "date": "2015-01-02",
+        "type": "Hospital",
+        "specialist": "MD House",
+        "diagnosisCodes": ["S62.5"],
+        "description":
+          "Healing time appr. 2 weeks. Caused by fist fight with Rick Forrester.",
+        "discharge": {
+          "date": "2015-01-16",
+          "criteria": "Thumb has healed."
+        }
+      }
+  ]
+}
+
+### Then post the patient a new HospitalEntry
+POST http://localhost:3001/api/patients/{{addPatient.response.body.id}}/entries
+Content-Type: application/json
+
+{
+  "date": "2024-06-20",
+  "type": "Hospital",
+  "specialist": "MD House",
+  "diagnosisCodes": ["S62.5"],
+  "description":
+    "Healing time appr. 10 days. Caused by excessive sewing.",
+  "discharge": {
+    "date": "2024-06-30",
+    "criteria": "Wrist and fingers have healed."
+  }
+}
+
+### Post an OccupationalHealthcare entry as well
+POST http://localhost:3001/api/patients/{{addPatient.response.body.id}}/entries
+Content-Type: application/json
+
+{
+  "date": "2024-06-10",
+  "type": "OccupationalHealthcare",
+  "specialist": "MD Watson",
+  "diagnosisCodes": ["S03.5"],
+  "employerName": "Forrester Fashion",
+  "description":
+    "Pain in wrists and fingers.",
+  "sickLeave": {
+    "startDate": "2024-06-10",
+    "endDate": "2024-06-15"
+  }
+}
+
+### Post HealthCheckEntry
+POST http://localhost:3001/api/patients/{{addPatient.response.body.id}}/entries
+Content-Type: application/json
+
+{
+  "date": "2024-06-08",
+  "type": "HealthCheck",
+  "specialist": "MD Cuddy",
+  "description": "Annual checkup.",
+  "healthCheckRating": 2
+}
+
+
+
+### Check if entry has been added to patient data
+GET http://localhost:3001/api/patients/{{addPatient.response.body.id}}/
