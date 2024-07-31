@@ -2,9 +2,12 @@ import { Diagnosis, Gender, Patient } from "../types";
 import FemaleIcon from "@mui/icons-material/Female";
 import MaleIcon from "@mui/icons-material/Male";
 import TransgenderIcon from "@mui/icons-material/Transgender";
-import { Box, Typography } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { Box, Button, Typography } from "@mui/material";
 import { assertNever } from "../utils";
 import EntryDetails from "./EntryDetails";
+import { useState } from "react";
+import AddEntryForm from "./AddEntryForm";
 
 interface PatientPageProps {
   patient: Patient | undefined;
@@ -12,7 +15,7 @@ interface PatientPageProps {
 }
 
 const PatientPage = ({ patient, diagnoses }: PatientPageProps) => {
-  console.log(patient);
+  const [showAddEntry, setShowAddEntry] = useState(false);
 
   if (!patient) {
     return null;
@@ -42,7 +45,18 @@ const PatientPage = ({ patient, diagnoses }: PatientPageProps) => {
         ssn: {patient.ssn} <br />
         occupation: {patient.occupation} <br />
       </Typography>
+      {showAddEntry ? (
+        <AddEntryForm diagnoses={diagnoses} id={patient.id} />
+      ) : null}
       <EntryDetails entries={patient.entries} diagnoses={diagnoses} />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => setShowAddEntry(!showAddEntry)}
+        startIcon={<AddIcon />}
+      >
+        add new entry
+      </Button>
     </div>
   );
 };
